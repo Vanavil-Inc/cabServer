@@ -3,10 +3,10 @@ const mongoose = require('mongoose');
 const ObjectID = mongoose.Schema.Types.ObjectId;
 
 module.exports = new mongoose.Schema({
-    time_slot:{
+    ShiftNo:{
         type: String
     },
-    date:{
+    ShiftTiming:{
         type: String
     },
     ObjId: {
