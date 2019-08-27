@@ -67,7 +67,7 @@ router.route('/login').post((req, res) => {
     const password = req.body.password;
 
     let token =  jwt.sign({mobileNo, password}, config.secret, { expiresIn: '60000' });
-
+    if(mobileNo != null && password !=null){
     User.find({
         mobileNo : mobileNo
     },function(err, response){
@@ -124,6 +124,13 @@ router.route('/login').post((req, res) => {
         }
     
     })
+}else{
+    res.json({
+        success: false,
+        message: 'User does not Exists',
+        //error: err
+    })
+}
 })
 
 router.route('/carsbid').post((req, res) => {
