@@ -1,8 +1,10 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
+const bodyParser= require('body-parser')
 
 const User = require('./user-model'); 
 const config = require('../Config');
+
 
 
  router.route('/registeruser').post((req, res) => {

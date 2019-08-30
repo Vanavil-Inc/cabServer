@@ -8,5 +8,6 @@ router.use('/api', require('../users/user-routes'));
 router.use('/api', require('../timeSlot/time-routes'));
 router.use('/api', require('../cars/cars-routes'));
 router.use('/api', require('../bidding/bidding-routes'));
+router.use('/api', require('../admin/admin-routes'));
 
 module.exports = router;
