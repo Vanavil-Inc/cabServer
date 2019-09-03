@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser')
 const xlsx = require('xlsx');
 const multer = require('multer');
-const df = require('dateformat');
+var dateFormat = require('dateformat');
 const admin = require('./admin-model');
 var groupArray = require('group-array');
 var groupBy = require('group-by');
@@ -30,8 +30,10 @@ router.post('/shiftupload', upload.single('file'), (req, res, next) => {
     const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheet_name[0]]);
     
     for (var i in data) {
+        var newDate =  new Date((data[i].Date - (25567 + 2))*86400*1000);
+          var convertedDate = dateFormat(newDate, "mm/dd/yyyy"); 
         var userObj = {
-            date : new Date((data[i].Date - (25567 + 2))*86400*1000),
+            date : convertedDate,
             shift1:data[i].Shift1,
             shift2:data[i].Shift2,
             shift3:data[i].Shift3,
@@ -48,10 +50,13 @@ router.post('/shiftupload', upload.single('file'), (req, res, next) => {
             }
         })
     }
-      for (var i in data) {      
+      for (var i in data) {
+          var newDate =  new Date((data[i].Date - (25567 + 2))*86400*1000);
+          var convertedDate = dateFormat(newDate, "mm/dd/yyyy"); 
+          //console.log(conDate); 
         arr[i] =
             {                 
-            date: new Date((data[i].Date - (25567 + 2))*86400*1000),  
+            date: convertedDate,  
             shift_name1:'4:00PM - 4:00AM',        
             car_req1:data[i].Shift1,
             shift_name2:'6:00PM - 6:00AM',  
