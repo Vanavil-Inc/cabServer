@@ -21,7 +21,7 @@ var storage = multer.diskStorage({
 
 var upload = multer({ storage: storage })
 
-router.post('/fileconvert', upload.single('file'), (req, res, next) => {
+router.post('/shiftupload', upload.single('file'), (req, res, next) => {
     var arr= [];
     const file = req.file;
     const workbook = xlsx.readFile(file.path, {type: 'binary'});
@@ -52,14 +52,14 @@ router.post('/fileconvert', upload.single('file'), (req, res, next) => {
         arr[i] =
             {                 
             date: new Date((data[i].Date - (25567 + 2))*86400*1000),  
-            shiftName1:'4:00PM - 4:00AM',        
-            shift1:data[i].Shift1,
-            shiftName2:'6:00PM - 6:00AM',  
-            shift2:data[i].Shift2,
-            shiftName3:'9:00PM - 9:00AM',  
-            shift3:data[i].Shift3,
-            shiftName4:'10:00PM - 10:00AM',  
-            shift4:data[i].Shift4,
+            shift_name1:'4:00PM - 4:00AM',        
+            car_req1:data[i].Shift1,
+            shift_name2:'6:00PM - 6:00AM',  
+            car_req2:data[i].Shift2,
+            shift_name3:'9:00PM - 9:00AM',  
+            car_req3:data[i].Shift3,
+            shift_name4:'10:00PM - 10:00AM',  
+            car_req4:data[i].Shift4,
             remarks:data[i].Remark
             }               
     }
