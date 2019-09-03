@@ -74,7 +74,7 @@ router.post('/shiftupload', upload.single('file'), (req, res, next) => {
             result: arr
         });
     }
-    catch{
+    catch(e){
         res.json({
             success: false,
             message: 'Invalid Date Format',
