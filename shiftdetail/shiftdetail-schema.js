@@ -3,19 +3,25 @@ const mongoose = require('mongoose');
 const ObjectID = mongoose.Schema.Types.ObjectId;
 
 module.exports = new mongoose.Schema({
-    name: {
+    date:{
         type: String
     },
-    password:{
+    shift1:{
         type: String
     },
-    mobileNo: {
-        type: Number
+    shift2:{
+        type: String
     },
-    token : {
+    shift3:{
+        type: String
+    },
+    shift4:{
+        type: String
+    },
+    remark:{
         type: String
     },
     ObjId: {
         type: ObjectID
-    },
+    }
 })

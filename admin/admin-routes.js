@@ -1,86 +1,130 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
-const bodyParser = require('body-parser')
-const xlsx = require('xlsx');
-const multer = require('multer');
-var dateFormat = require('dateformat');
-const admin = require('./admin-model');
-var groupArray = require('group-array');
-var groupBy = require('group-by');
-var _ = require('lodash');
+const bodyParser= require('body-parser')
 
-// SET STORAGE
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'public/uploads')
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now())
-    }
-})
+const admin = require('./admin-model'); 
+const config = require('../Config');
 
-var upload = multer({ storage: storage })
+router.route('/registeradmin').post((req, res) => {
 
-router.post('/shiftupload', upload.single('file'), (req, res, next) => {
-    var arr = [];
-    const file = req.file;
-    const workbook = xlsx.readFile(file.path, { type: 'binary' });
-    ws = workbook.Sheets[workbook.SheetNames[0]];
-    const sheet_name = workbook.SheetNames;
-    const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheet_name[0]]);
-    try {
-        for (var i in data) {
-            var newDate = new Date((data[i].Date - (25567 + 2)) * 86400 * 1000);
-            var convertedDate = dateFormat(newDate, "mm/dd/yyyy");
-            var userObj = {
-                date: convertedDate,
-                shift1: data[i].Shift1,
-                shift2: data[i].Shift2,
-                shift3: data[i].Shift3,
-                shift4: data[i].Shift4,
-                remark: data[i].Remark
-            }
-            admin.create(userObj, (err, user) => {
-                if (err) {
-                    res.json({
-                        success: false,
-                        message: 'Something went Wrong',
-                        error: err
-                    });
-                }
+    
+    const name = req.body.name;
+    const password = req.body.password;
+    const mobileNo = req.body.mobileNo;
+
+    admin.find({
+        mobileNo : mobileNo
+    },function(err, response){
+        if(err){
+            console.log(err)
+            res.json({
+                success: false,
+                message: "something went wrong!",
+                error: err
             })
         }
-        for (var i in data) {
-            var newDate = new Date((data[i].Date - (25567 + 2)) * 86400 * 1000);
-            var convertedDate = dateFormat(newDate, "mm/dd/yyyy");
-            //console.log(conDate); 
-            arr[i] =
-                {
-                    date: convertedDate,
-                    shift_name1: '4:00PM - 4:00AM',
-                    car_req1: data[i].Shift1,
-                    shift_name2: '6:00PM - 6:00AM',
-                    car_req2: data[i].Shift2,
-                    shift_name3: '9:00PM - 9:00AM',
-                    car_req3: data[i].Shift3,
-                    shift_name4: '10:00PM - 10:00AM',
-                    car_req4: data[i].Shift4,
-                    remarks: data[i].Remark
-                }
+        if(response.length>0){
+            res.json({
+                success: false,
+                message: "Mobile number registered",
+                error: err
+            })
+        } else {
+            var userObj = {
+                name : name,
+                password : password,
+                mobileNo : mobileNo,
+            }
+        
+            admin.create(userObj, (err, user) => {
+                        if (err) {
+                            res.json({
+                                success: false,
+                                message: 'User already Registered',
+                                error: err
+                            });
+                        }
+        
+                        res.json({
+                            success: true,
+                            message: "User registered successfully",
+                            result: user
+                        });
+        
+                    });
         }
-        res.json({
-            success: true,
-            message: "Shift Details Uploaded",
-            result: arr
-        });
-    }
-    catch(e){
-        res.json({
-            success: false,
-            message: 'Invalid Date Format',
-            //error: err
-        });
-    }
+        
+    })
 });
+router.route('/login').post((req, res) => {
+    const mobileNo = req.body.mobileNo;
+    const password = req.body.password;
+
+    let token =  jwt.sign({mobileNo, password}, config.secret, { expiresIn: '60000' });
+    if(mobileNo != null && password !=null){
+        admin.find({
+        mobileNo : mobileNo
+    },function(err, response){
+        if(err){
+            console.log(err)
+            res.json({
+                success: false,
+                message: "something went wrong!",
+                error: err
+            })
+        }
+    
+        if(response != "") {
+            if(response[0].password === password){
+                admin.findOneAndUpdate({mobileNo : mobileNo},{token : token}, function(err, resp){
+                    if(err){
+                        console.log("update err" + err);
+                    } else {
+                        console.log("token updated : "+ token);
+                        // console.log("token updated response : " + resp);
+                        admin.find({mobileNo : mobileNo}, function(err, updateResp){
+                            if(err){
+                                res.json({
+                                    success: false,
+                                    message: constant.genericError,
+                                    error: err
+                                })
+                            } else {
+                                console.log("updated new resp : " + updateResp);
+                                res.json({
+                                    success: true,
+                                    message: "Login success",
+                                    result: updateResp
+                                });
+                            }
+                        })
+                       
+                    }
+                })
+            } else { 
+                res.json({
+                    success: false,
+                    message: "Incorrect MobileNumber/Password",
+                    error: err
+                });
+            }
+        } else {
+            res.json({
+                success: false,
+                message: 'User does not Exists',
+                error: err
+            })
+
+        }
+    
+    })
+}else{
+    res.json({
+        success: false,
+        message: 'User does not Exists',
+        //error: err
+    })
+}
+})
 
 module.exports = router;
