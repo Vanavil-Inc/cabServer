@@ -59,7 +59,7 @@ router.post('/shiftupload', upload.single('file'), (req, res, next) => {
         })
     }
     for (let rowNum = 1; rowNum <= range.e.r; rowNum++) {
-        arr[rowNum] =
+        arr[rowNum-1] =
             {
                 date: sheet[xlsx.utils.encode_cell({ r: rowNum, c: 0 })].w,
                 shift_name1: sheet[xlsx.utils.encode_cell({ r: 0, c: 1 })].w,
@@ -73,6 +73,7 @@ router.post('/shiftupload', upload.single('file'), (req, res, next) => {
                 remarks: sheet[xlsx.utils.encode_cell({ r: rowNum, c: 5 })].w
             }
     }
+    console.log(arr)
     res.json({
         success: true,
         message: "Shift Details Uploaded",
