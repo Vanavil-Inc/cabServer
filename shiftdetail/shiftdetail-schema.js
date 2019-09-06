@@ -21,6 +21,21 @@ module.exports = new mongoose.Schema({
     remark:{
         type: String
     },
+    month:{
+        type: String
+    },
+    shift_name1:{
+        type: String
+    },
+    shift_name2:{
+        type: String
+    },
+    shift_name3:{
+        type: String
+    },
+    shift_name4:{
+        type: String
+    },
     ObjId: {
         type: ObjectID
     }
